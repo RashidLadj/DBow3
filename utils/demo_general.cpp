@@ -21,8 +21,11 @@
 #endif
 #include "DescManip.h"
 
+#include <filesystem>
+
 using namespace DBoW3;
 using namespace std;
+using namespace std::__fs::filesystem;
 
 
 //command line parser
@@ -44,8 +47,17 @@ void wait()
 
 vector<string> readImagePaths(int argc,char **argv,int start){
     vector<string> paths;
-    for(int i=start;i<argc;i++)    paths.push_back(argv[i]);
-        return paths;
+    cout << argc << std::endl;
+    if (argc == 3)
+        for (const auto & entry : directory_iterator(argv[2])){
+            std::cout << entry.path() << std::endl;
+            paths.push_back(entry.path());
+        }
+    else
+        for(int i=start;i<argc;i++)    
+            paths.push_back(argv[i]);
+
+    return paths;
 }
 
 vector< cv::Mat  >  loadFeatures( std::vector<string> path_to_images,string descriptor="") throw (std::exception){
