@@ -47,16 +47,20 @@ vector<string> readImagePaths(int argc,char **argv,int start){
     vector<string> paths;
 
     if (argc == 3)
+        
         for (const auto & entry : directory_iterator(argv[2])){
-            paths.push_back(entry.path());
-            numberImg ++;
+            path tmp = entry.path();
+            if (tmp.extension() == ".jpg" || tmp.extension() == ".png") { 
+                paths.push_back(entry.path());
+                numberImg ++;
+            }
         }
     else
         for(int i=start;i<argc;i++){    
             paths.push_back(argv[i]);
             numberImg ++;
         }
-
+        
     sort(paths.begin(), paths.end());
     
     return paths;
