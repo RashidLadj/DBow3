@@ -78,7 +78,7 @@ int main(int argc,char **argv){
     auto features=loadFeatures({argv[2]},"orb");
 
     {ScopeTimer t("dbow");
-            voc.transform(features[0],vv);
+        voc.transform(features[0],vv);
     }
     cout<<vv.begin()->first<<" "<<vv.begin()->second<<endl;
     cout<<vv.rbegin()->first<<" "<<vv.rbegin()->second<<endl;

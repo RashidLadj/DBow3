@@ -27,10 +27,9 @@ using namespace DBoW3;
 using namespace std;
 using namespace std::__fs::filesystem;
 
-
 //command line parser
 class CmdLineParser{int argc; char **argv; public: CmdLineParser(int _argc,char **_argv):argc(_argc),argv(_argv){}  bool operator[] ( string param ) {int idx=-1;  for ( int i=0; i<argc && idx==-1; i++ ) if ( string ( argv[i] ) ==param ) idx=i;    return ( idx!=-1 ) ;    } string operator()(string param,string defvalue="-1"){int idx=-1;    for ( int i=0; i<argc && idx==-1; i++ ) if ( string ( argv[i] ) ==param ) idx=i; if ( idx==-1 ) return defvalue;   else  return ( argv[  idx+1] ); }};
-
+int numberImg = 0;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
@@ -38,8 +37,7 @@ class CmdLineParser{int argc; char **argv; public: CmdLineParser(int _argc,char 
 const bool EXTENDED_SURF = false;
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
-void wait()
-{
+void wait(){
     cout << endl << "Press enter to continue" << endl;
     getchar();
 }
@@ -47,16 +45,20 @@ void wait()
 
 vector<string> readImagePaths(int argc,char **argv,int start){
     vector<string> paths;
-    cout << argc << std::endl;
+
     if (argc == 3)
         for (const auto & entry : directory_iterator(argv[2])){
-            std::cout << entry.path() << std::endl;
             paths.push_back(entry.path());
+            numberImg ++;
         }
     else
-        for(int i=start;i<argc;i++)    
+        for(int i=start;i<argc;i++){    
             paths.push_back(argv[i]);
+            numberImg ++;
+        }
 
+    sort(paths.begin(), paths.end());
+    
     return paths;
 }
 
@@ -101,6 +103,16 @@ void testVocCreation(const vector<cv::Mat> &features)
     const int k = 9;
     const int L = 3;
     const WeightingType weight = TF_IDF;
+
+    // enum ScoringType{
+    //     L1_NORM,
+    //     L2_NORM,
+    //     CHI_SQUARE,
+    //     KL,
+    //     BHATTACHARYYA,
+    //     DOT_PRODUCT
+    // };
+
     const ScoringType score = L1_NORM;
 
     DBoW3::Vocabulary voc(k, L, weight, score);
@@ -162,7 +174,7 @@ void testDatabase(const  vector<cv::Mat > &features)
     QueryResults ret;
     for(size_t i = 0; i < features.size(); i++)
     {
-        db.query(features[i], ret, 4);
+        db.query(features[i], ret, numberImg);
 
         // ret[0] is always the same image in this case, because we added it to the
         // database. ret[1] is the second best match.
